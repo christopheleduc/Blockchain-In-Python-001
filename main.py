@@ -10,16 +10,22 @@
 __author__ = "CodeKiller"
 __date__ =  "18 juillet 2020"
 
-import hashlib, json, pprint
+import hashlib, json, pprint, time, datetime
 
 """
 Blockchain experiment in Python
 """
 
-__version__ = "1.0.0 Beta"
+__version__ = "1.0.1 Beta"
 
 class Block():
-    def __init__(self, position, date_creation, infos, precedantHash = ''):
+
+    # posix_now = time.time()
+    # d = datetime.datetime.fromtimestamp(posix_now)
+    this_time = datetime.datetime.utcnow() # datetime.datetime type
+    epoch_time = this_time.timestamp()      # posix time or epoch time
+
+    def __init__(self, position, date_creation = epoch_time, infos = '0', precedantHash = ''):
         self.position = position
         self.date_creation = date_creation
         self.infos = infos
@@ -27,17 +33,18 @@ class Block():
         self.hash = self.hashBlock()
 
     def hashBlock(self):
-        return hashlib.sha256(bytes(str(self.position) + self.precedantHash + self.date_creation + json.dumps(self.infos, separators=(',', ':')), 'utf-8')).hexdigest()
+        return hashlib.sha256(bytes(str(hashlib.sha256(bytes(str(self.position) + self.precedantHash + str(self.date_creation) + json.dumps(self.infos, separators=(',', ':')), 'utf-8')).hexdigest()), 'utf-8')).hexdigest()
 
 class Blockchain():
     def __init__(self):
         self.chain = [self.genesisBlock()]
     
     def genesisBlock(self):
-        return Block(0, "01/05/2018", "Cointelegraph:CFTC Chairman On Crypto Regulation: ‘I Don’t See It Being Resolved Anytime Soon’", "0")
+        return Block(0, 1525183714.464137, "Cointelegraph:CFTC Chairman On Crypto Regulation: ‘I Don’t See It Being Resolved Anytime Soon’", "0")
 
     def lastBlock(self):
-        return self.chain[len(self.chain) -1]
+        # return self.chain[len(self.chain) -1]
+        return self.chain[ -1]
     
     def addBlock(self, newBlock):
         newBlock.precedantHash = self.lastBlock().hash
@@ -61,8 +68,8 @@ class Blockchain():
 if __name__=="__main__":
     c = Blockchain()
     # On ajoute 2 Block
-    c.addBlock(Block(1, "02/05/2018", [('montant', 5)] ))
-    c.addBlock(Block(2, "03/05/2018", [('montant', 12)] ))
+    c.addBlock(Block(1, infos=[('montant', 5)] ))
+    c.addBlock(Block(2, infos= [('montant', 12)] ))
 
     # On affiche les Block
     print('**************************************************')
@@ -70,7 +77,7 @@ if __name__=="__main__":
         #print(c.chain[i])
         print('--------------------------------------------------------')
         print ("BLOCK:   " + json.dumps(c.chain[i].position, separators=(',', ':')))
-        print ("DATE:    " + json.dumps(c.chain[i].date_creation, separators=(',', ':')))
+        print ("DATE:    " + "Posix: " + "[" + json.dumps(c.chain[i].date_creation, separators=(',', ':')) + "];" + " Convert: " + "[" + str(datetime.datetime.fromtimestamp (float(c.chain[i].date_creation)))+ "];")
         print ("DATA:    " + json.dumps(c.chain[i].infos, separators=(': ', ':')))
         print ("HASH:    " + json.dumps(c.chain[i].hash, separators=(',', ':')))
         print ("PreHASH: " + json.dumps(c.chain[i].precedantHash, separators=(',', ':')))
@@ -90,7 +97,7 @@ if __name__=="__main__":
         #print(c.chain[i])
         print('--------------------------------------------------------')
         print ("BLOCK:   " + json.dumps(c.chain[i].position, separators=(',', ':')))
-        print ("DATE:    " + json.dumps(c.chain[i].date_creation, separators=(',', ':')))
+        print ("DATE:    " + "Posix: " + "[" + json.dumps(c.chain[i].date_creation, separators=(',', ':')) + "];" + " Convert: " + "[" + str(datetime.datetime.fromtimestamp (float(c.chain[i].date_creation)))+ "];")
         print ("DATA:    " + json.dumps(c.chain[i].infos, separators=(': ', ':')))
         print ("HASH:    " + json.dumps(c.chain[i].hash, separators=(',', ':')))
         print ("PreHASH: " + json.dumps(c.chain[i].precedantHash, separators=(',', ':')))

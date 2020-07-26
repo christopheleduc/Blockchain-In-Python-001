@@ -41,6 +41,15 @@ All notable changes to this project will be documented in this file.
 
 &nbsp;
 
+## [1.0.1 Beta] - 2020-07-26
+
+### Changed
+
+* Double SHA256 like BTC.
+* Posix format for timestamp.
+
+&nbsp;
+
 ## [1.0.0 Beta] - 2020-07-18
 
 ### Changed
